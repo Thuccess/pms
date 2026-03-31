@@ -1,0 +1,179 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+:root {
+  --background: #FCFAF5;
+  --foreground: #16130C;
+  --card: #FFFFFF;
+  --card-foreground: #1D1607;
+  --popover: #FFFFFF;
+  --popover-foreground: #1D1607;
+  --primary: #C8A64B;
+  --primary-dark: #9B7A2C;
+  --primary-foreground: #1A1303;
+  --secondary: #F3EBDD;
+  --secondary-foreground: #1D1607;
+  --muted: #F6F1E6;
+  --muted-foreground: #6C6047;
+  --accent: #F4E9D1;
+  --accent-foreground: #1D1607;
+  --destructive: #EF4444;
+  --destructive-foreground: #F9F9F9;
+  --border: #E7DBC2;
+  --input: #E7DBC2;
+  --ring: #C8A64B;
+}
+
+.dark {
+  --background: #090807;
+  --foreground: #F6F1E6;
+  --card: #11100E;
+  --card-foreground: #F6F1E6;
+  --popover: #11100E;
+  --popover-foreground: #F6F1E6;
+  --primary: #C8A64B;
+  --primary-dark: #9B7A2C;
+  --primary-foreground: #0A0701;
+  --secondary: #191715;
+  --secondary-foreground: #F6F1E6;
+  --muted: #151311;
+  --muted-foreground: #9F947E;
+  --accent: #1D1913;
+  --accent-foreground: #F6F1E6;
+  --destructive: #7F1D1D;
+  --destructive-foreground: #FFFFFF;
+  --border: #2B2721;
+  --input: #2B2721;
+  --ring: #C8A64B;
+}
+
+.density-compact .premium-input {
+  @apply py-2 text-[11px];
+}
+
+.density-compact .premium-surface {
+  @apply rounded-lg;
+}
+
+.density-compact .touch-target {
+  min-height: 40px;
+}
+
+@layer base {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased transition-colors duration-300;
+    background-image: radial-gradient(circle at top right, rgba(200, 166, 75, 0.08), transparent 38%);
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+@layer components {
+  .page-container {
+    @apply w-full max-w-screen-xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12;
+  }
+
+  .fluid-title {
+    font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.75rem);
+    line-height: 1.1;
+  }
+
+  .fluid-subtitle {
+    font-size: clamp(0.625rem, 0.58rem + 0.18vw, 0.75rem);
+  }
+
+  .touch-target {
+    min-height: 44px;
+  }
+
+  .card-shadow {
+    box-shadow: 0 16px 40px -24px rgba(7, 6, 4, 0.55);
+  }
+
+  .gold-gradient {
+    background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
+  }
+
+  .gold-text-gradient {
+    @apply bg-clip-text text-transparent bg-linear-to-br from-primary to-primary-dark;
+  }
+
+  .premium-surface {
+    @apply bg-card border border-border rounded-xl;
+    box-shadow: 0 16px 40px -24px rgba(7, 6, 4, 0.55);
+  }
+
+  .section-title {
+    @apply text-xs sm:text-sm font-bold uppercase tracking-[0.24em] text-foreground;
+  }
+
+  .section-subtitle {
+    @apply text-[9px] sm:text-[10px] uppercase tracking-[0.28em] text-muted-foreground;
+  }
+
+  .premium-input {
+    @apply w-full bg-card border border-border rounded-md px-4 py-3 text-xs tracking-wide focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-muted;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-border rounded-full hover:bg-primary/60 transition-all;
+}
+
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  @apply stroke-border;
+}
+
+.recharts-text {
+  @apply fill-muted-foreground text-[10px] uppercase tracking-widest font-bold;
+}
+
+.recharts-tooltip-wrapper {
+  @apply outline-none;
+}

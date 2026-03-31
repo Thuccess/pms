@@ -1,0 +1,43 @@
+import { Tenant } from "@/types";
+
+export const MOCK_TENANTS: Tenant[] = [
+  {
+    id: "t1",
+    name: "Alexander Sterling",
+    email: "alex.sterling@elite.com",
+    phone: "+971 50 123 4567",
+    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+    propertyId: "1",
+    unitId: "u1",
+    leaseStart: "2023-01-01",
+    leaseEnd: "2025-01-01",
+    balance: 0,
+    status: "Active",
+  },
+  {
+    id: "t2",
+    name: "Isabella Vane",
+    email: "isabella.v@vogue.com",
+    phone: "+971 50 987 6543",
+    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+    propertyId: "1",
+    unitId: "u3",
+    leaseStart: "2023-06-01",
+    leaseEnd: "2024-06-01",
+    balance: 15000,
+    status: "Active",
+  },
+  {
+    id: "t3",
+    name: "Marcus Thorne",
+    email: "marcus.t@capital.com",
+    phone: "+44 20 7946 0000",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+    propertyId: "2",
+    unitId: "u4",
+    leaseStart: "2024-01-01",
+    leaseEnd: "2025-01-01",
+    balance: 0,
+    status: "Active",
+  },
+];
