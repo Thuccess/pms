@@ -1,4 +1,7 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
+const RAW_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
+const API_BASE_URL = /\/api$/i.test(RAW_API_BASE_URL.replace(/\/+$/, ""))
+  ? RAW_API_BASE_URL.replace(/\/+$/, "")
+  : `${RAW_API_BASE_URL.replace(/\/+$/, "")}/api`;
 const TOKEN_KEY = "luxorld_auth_token";
 
 type RequestOptions = RequestInit & {
