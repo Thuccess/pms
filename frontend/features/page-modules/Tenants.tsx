@@ -89,7 +89,7 @@ export const Tenants = () => {
   };
 
   return (
-    <div className="space-y-6 sm:space-y-8 lg:space-y-10 max-w-screen-xl mx-auto">
+    <div className="space-y-6 sm:space-y-8 lg:space-y-10 max-w-7xl mx-auto">
       <div>
         <h1 className="fluid-title font-bold text-foreground uppercase tracking-[0.16em]">Resident Registry</h1>
         <p className="text-[9px] sm:text-[10px] text-muted-foreground uppercase tracking-[0.28em] mt-3">Elite community management</p>

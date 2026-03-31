@@ -93,7 +93,7 @@ export const Maintenance = () => {
   };
 
   return (
-    <div className="space-y-6 sm:space-y-8 lg:space-y-10 max-w-screen-xl mx-auto">
+    <div className="space-y-6 sm:space-y-8 lg:space-y-10 max-w-7xl mx-auto">
       <div>
         <h1 className="fluid-title font-bold text-foreground uppercase tracking-[0.14em]">Maintenance</h1>
         <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-[0.24em] mt-2 sm:mt-4">Concierge Service Registry</p>

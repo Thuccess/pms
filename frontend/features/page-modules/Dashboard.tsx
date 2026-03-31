@@ -81,7 +81,7 @@ export const Dashboard = () => {
   ];
 
   return (
-    <div className="space-y-6 sm:space-y-8 lg:space-y-10 max-w-screen-xl mx-auto">
+    <div className="space-y-6 sm:space-y-8 lg:space-y-10 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>

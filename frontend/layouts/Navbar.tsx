@@ -15,7 +15,7 @@ export const Navbar = ({ onMenuClick }: NavbarProps) => {
   const { user } = useAuth();
 
   return (
-    <header className="h-16 sm:h-[4.5rem] lg:h-20 bg-background/85 backdrop-blur-xl border-b border-border/80 flex items-center justify-between px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 sticky top-0 z-40 transition-all duration-300">
+    <header className="h-16 sm:h-18 lg:h-20 bg-background/85 backdrop-blur-xl border-b border-border/80 flex items-center justify-between px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 sticky top-0 z-40 transition-all duration-300">
       <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
         <button
           onClick={onMenuClick}
