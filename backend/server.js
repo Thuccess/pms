@@ -3,7 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-const connectDB = require("./config/db");
+const { startMongoWithRetry, isDbConnected } = require("./config/db");
 const authMiddleware = require("./middleware/authMiddleware");
 const errorHandler = require("./middleware/errorHandler");
 const seedDefaultUser = require("./utils/seedDefaultUser");
@@ -27,7 +27,7 @@ app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.get("/api/health", (req, res) => {
-  res.json({ ok: true });
+  res.json({ ok: true, dbConnected: isDbConnected() });
 });
 
 app.use("/api/auth", authRoutes);
@@ -48,10 +48,11 @@ app.use("/api/records", authMiddleware, recordsRoutes);
 app.use(errorHandler);
 
 const start = async () => {
-  await connectDB();
-  await seedDefaultUser();
   app.listen(PORT, () => {
-    console.log(`Backend running on http://localhost:${PORT}/api`);
+    console.log(`Backend running on port ${PORT}`);
+    startMongoWithRetry({
+      onConnected: seedDefaultUser,
+    });
   });
 };
 
