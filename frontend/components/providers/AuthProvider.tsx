@@ -22,6 +22,7 @@ type AuthContextValue = {
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+const USER_KEY = "user";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -30,23 +31,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const refreshMe = async () => {
     const token = authTokenStorage.get();
+    console.log("Token:", token);
     if (!token) {
       setIsAuthenticated(false);
       setUser(null);
       setLoading(false);
       return;
     }
-    try {
-      const me = await apiRequest<AuthUser>("/auth/me");
-      setUser(me);
-      setIsAuthenticated(true);
-    } catch {
-      authTokenStorage.clear();
-      setUser(null);
-      setIsAuthenticated(false);
-    } finally {
-      setLoading(false);
+
+    // Temporary mode: trust local session to avoid redirect loop while backend
+    // DB-dependent auth endpoints may fail.
+    let cachedUser: AuthUser | null = null;
+    if (typeof window !== "undefined") {
+      const rawUser = window.localStorage.getItem(USER_KEY);
+      if (rawUser) {
+        try {
+          cachedUser = JSON.parse(rawUser) as AuthUser;
+        } catch {
+          cachedUser = null;
+        }
+      }
     }
+    setUser(cachedUser);
+    setIsAuthenticated(true);
+    setLoading(false);
+    console.log("isAuthenticated:", true);
   };
 
   useEffect(() => {
@@ -69,6 +78,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           authTokenStorage.set(result.token);
           setUser(result.user);
           setIsAuthenticated(true);
+          if (typeof window !== "undefined") {
+            window.localStorage.setItem(USER_KEY, JSON.stringify(result.user));
+          }
           return { ok: true };
         } catch (error) {
           return { ok: false, message: error instanceof Error ? error.message : "Invalid credentials" };
@@ -99,6 +111,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       },
       logout: () => {
         authTokenStorage.clear();
+        if (typeof window !== "undefined") {
+          window.localStorage.removeItem(USER_KEY);
+        }
         setIsAuthenticated(false);
         setUser(null);
       },

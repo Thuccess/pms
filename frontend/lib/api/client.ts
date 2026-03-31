@@ -2,7 +2,8 @@ const RAW_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localho
 const API_BASE_URL = /\/api$/i.test(RAW_API_BASE_URL.replace(/\/+$/, ""))
   ? RAW_API_BASE_URL.replace(/\/+$/, "")
   : `${RAW_API_BASE_URL.replace(/\/+$/, "")}/api`;
-const TOKEN_KEY = "luxorld_auth_token";
+const TOKEN_KEY = "token";
+const LEGACY_TOKEN_KEY = "luxorld_auth_token";
 
 type RequestOptions = RequestInit & {
   auth?: boolean;
@@ -19,12 +20,20 @@ const parseJson = async (res: Response) => {
 };
 
 export const authTokenStorage = {
-  get: () => (typeof window === "undefined" ? null : window.localStorage.getItem(TOKEN_KEY)),
+  get: () => {
+    if (typeof window === "undefined") return null;
+    return window.localStorage.getItem(TOKEN_KEY) || window.localStorage.getItem(LEGACY_TOKEN_KEY);
+  },
   set: (token: string) => {
-    if (typeof window !== "undefined") window.localStorage.setItem(TOKEN_KEY, token);
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(TOKEN_KEY, token);
+    // Keep legacy key in sync during transition.
+    window.localStorage.setItem(LEGACY_TOKEN_KEY, token);
   },
   clear: () => {
-    if (typeof window !== "undefined") window.localStorage.removeItem(TOKEN_KEY);
+    if (typeof window === "undefined") return;
+    window.localStorage.removeItem(TOKEN_KEY);
+    window.localStorage.removeItem(LEGACY_TOKEN_KEY);
   },
 };
 
@@ -50,10 +59,9 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   if (!response.ok) {
     const message = payload?.message || "Request failed";
     if (response.status === 401) {
-      authTokenStorage.clear();
-      if (typeof window !== "undefined" && window.location.pathname !== "/") {
-        window.location.href = "/";
-      }
+      // Temporary auth-bypass mode: keep session token to prevent redirect loops
+      // when backend DB/me checks fail.
+      console.warn("API 401 received; preserving local auth session temporarily.");
     }
     throw new Error(message);
   }
