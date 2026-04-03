@@ -1,7 +1,14 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { apiRequest, authTokenStorage } from "@/lib/api/client";
+import { useRouter } from "next/navigation";
+import {
+  apiRequest,
+  authTokenStorage,
+  clearAuthSession,
+  setUnauthorizedHandler,
+  USER_SESSION_KEY,
+} from "@/lib/api/client";
 
 type AuthUser = {
   id: string;
@@ -22,9 +29,9 @@ type AuthContextValue = {
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
-const USER_KEY = "user";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -41,7 +48,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // so login does not depend on a live /auth/me call.
     let cachedUser: AuthUser | null = null;
     if (typeof window !== "undefined") {
-      const raw = window.localStorage.getItem(USER_KEY);
+      const raw = window.localStorage.getItem(USER_SESSION_KEY);
       if (raw) {
         try {
           cachedUser = JSON.parse(raw) as AuthUser;
@@ -73,10 +80,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             body: JSON.stringify({ email, password }),
           });
           authTokenStorage.set(result.token);
-          setUser(result.user);
+          const normalized: AuthUser = {
+            ...result.user,
+            id: result.user?.id != null ? String(result.user.id) : "",
+          };
+          setUser(normalized);
           setIsAuthenticated(true);
           if (typeof window !== "undefined") {
-            window.localStorage.setItem(USER_KEY, JSON.stringify(result.user));
+            window.localStorage.setItem(USER_SESSION_KEY, JSON.stringify(normalized));
           }
           return { ok: true };
         } catch (error) {
@@ -89,7 +100,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             method: "PUT",
             body: JSON.stringify(payload),
           });
-          setUser(updated);
+          const nextUser: AuthUser = {
+            ...updated,
+            id: updated?.id != null ? String(updated.id) : "",
+          };
+          setUser(nextUser);
+          if (typeof window !== "undefined") {
+            window.localStorage.setItem(USER_SESSION_KEY, JSON.stringify(nextUser));
+          }
           return { ok: true };
         } catch (error) {
           return { ok: false, message: error instanceof Error ? error.message : "Profile update failed" };

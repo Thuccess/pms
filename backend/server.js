@@ -1,5 +1,10 @@
 require("dotenv").config();
 
+if (!process.env.JWT_SECRET || String(process.env.JWT_SECRET).trim() === "") {
+  console.error("FATAL: JWT_SECRET must be set in environment or .env");
+  process.exit(1);
+}
+
 const express = require("express");
 const cors = require("cors");
 const path = require("path");

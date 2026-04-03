@@ -28,7 +28,8 @@ const login = asyncHandler(async (req, res) => {
     });
   }
 
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+  const userId = String(user._id);
+  const token = jwt.sign({ id: userId }, process.env.JWT_SECRET, {
     expiresIn: "7d",
   });
 
@@ -36,7 +37,7 @@ const login = asyncHandler(async (req, res) => {
     success: true,
     token,
     user: {
-      id: user._id,
+      id: userId,
       name: user.name,
       email: user.email,
       avatar: user.avatar,

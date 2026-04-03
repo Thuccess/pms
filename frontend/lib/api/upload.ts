@@ -1,4 +1,4 @@
-import { API_BASE_URL, authTokenStorage } from "@/lib/api/client";
+import { API_BASE_URL, authTokenStorage, notifyUnauthorized } from "@/lib/api/client";
 
 export type UploadProgressCallback = (progress: number) => void;
 
@@ -35,10 +35,7 @@ export function uploadImageFile(
           return;
         }
         if (xhr.status === 401) {
-          authTokenStorage.clear();
-          if (typeof window !== "undefined") {
-            window.location.href = "/";
-          }
+          notifyUnauthorized();
           reject(new Error("Session expired. Please log in and try again."));
           return;
         }
