@@ -66,6 +66,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     void refreshMe();
   }, []);
 
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      setIsAuthenticated(false);
+      setUser(null);
+      router.replace("/");
+    });
+    return () => setUnauthorizedHandler(null);
+  }, [router]);
+
   const value = useMemo<AuthContextValue>(
     () => ({
       isAuthenticated,
@@ -125,10 +134,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
       },
       logout: () => {
-        authTokenStorage.clear();
-        if (typeof window !== "undefined") {
-          window.localStorage.removeItem(USER_KEY);
-        }
+        clearAuthSession();
         setIsAuthenticated(false);
         setUser(null);
       },
