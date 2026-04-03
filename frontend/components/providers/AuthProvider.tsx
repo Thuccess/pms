@@ -22,6 +22,7 @@ type AuthContextValue = {
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+const USER_KEY = "user";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -36,17 +37,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setLoading(false);
       return;
     }
-    try {
-      const me = await apiRequest<AuthUser>("/auth/me");
-      setUser(me);
-      setIsAuthenticated(true);
-    } catch {
-      authTokenStorage.clear();
-      setUser(null);
-      setIsAuthenticated(false);
-    } finally {
-      setLoading(false);
+    // Trust local token and cached user to restore session on reload,
+    // so login does not depend on a live /auth/me call.
+    let cachedUser: AuthUser | null = null;
+    if (typeof window !== "undefined") {
+      const raw = window.localStorage.getItem(USER_KEY);
+      if (raw) {
+        try {
+          cachedUser = JSON.parse(raw) as AuthUser;
+        } catch {
+          cachedUser = null;
+        }
+      }
     }
+    setUser(cachedUser);
+    setIsAuthenticated(true);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -69,6 +75,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           authTokenStorage.set(result.token);
           setUser(result.user);
           setIsAuthenticated(true);
+          if (typeof window !== "undefined") {
+            window.localStorage.setItem(USER_KEY, JSON.stringify(result.user));
+          }
           return { ok: true };
         } catch (error) {
           return { ok: false, message: error instanceof Error ? error.message : "Invalid credentials" };
@@ -99,6 +108,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       },
       logout: () => {
         authTokenStorage.clear();
+        if (typeof window !== "undefined") {
+          window.localStorage.removeItem(USER_KEY);
+        }
         setIsAuthenticated(false);
         setUser(null);
       },
