@@ -1,5 +1,8 @@
 const mongoose = require("mongoose");
 
+// Fail fast on queries when disconnected instead of buffering for 10s (clearer errors for API + logs).
+mongoose.set("bufferCommands", false);
+
 let connectionReady = false;
 let connecting = false;
 
@@ -37,9 +40,10 @@ const startMongoWithRetry = ({ onConnected } = {}) => {
     } catch (error) {
       connectionReady = false;
       console.error(
-        `MongoDB connection failed. Retrying in ${retryDelayMs / 1000}s. ` +
-          "If using MongoDB Atlas, ensure network access allows Render outbound IPs.",
-        error.message
+        `MongoDB connection failed. Retrying in ${retryDelayMs / 1000}s.\n` +
+          "Atlas: Network Access - add your current IP (or 0.0.0.0/0 for dev only).\n" +
+          "Render/serverless: allow that host outbound IPs or use Atlas private endpoint.\n" +
+          `Reason: ${error.message}`
       );
       setTimeout(attempt, retryDelayMs);
     }
