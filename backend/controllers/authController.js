@@ -1,4 +1,5 @@
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const asyncHandler = require("../utils/asyncHandler");
 
@@ -11,19 +12,34 @@ const login = asyncHandler(async (req, res) => {
     });
   }
 
-  if (email !== "info@luxorld.com" || password !== "12345678") {
+  const user = await User.findOne({ email });
+  if (!user) {
     return res.status(401).json({
       success: false,
       message: "Invalid credentials",
     });
   }
 
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid credentials",
+    });
+  }
+
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: "7d",
+  });
+
   return res.json({
     success: true,
-    token: "admin-token",
+    token,
     user: {
-      email: "info@luxorld.com",
-      role: "admin",
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar,
     },
   });
 });

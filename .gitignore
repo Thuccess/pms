@@ -11,6 +11,9 @@ frontend/.next/
 dist/
 build/
 
+# Uploads
+backend/uploads/
+
 # Env files
 .env
 .env.*
